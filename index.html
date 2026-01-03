@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bannybrain Data Hub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<style>
+* { box-sizing: border-box; scroll-behavior: smooth; }
+body { margin:0; font-family: Arial, Helvetica, sans-serif; background:#0f2027; color:#fff;}
+header { background: linear-gradient(90deg, gold, silver); position: fixed; top:0; width:100%; z-index:1000; }
+header nav { display:flex; justify-content:center; padding:15px 0; }
+header nav a { color:#000; margin:0 20px; text-decoration:none; font-weight:bold; font-size:16px; }
+header nav a:hover { color:#ff9800; }
+section { padding:100px 20px 60px 20px; min-height:100vh; }
+.logo { width:150px; height:150px; border-radius:50%; margin:20px auto; background: linear-gradient(135deg,gold,silver,#ff9800,#00ff99); display:flex; align-items:center; justify-content:center; font-weight:900; color:#000; box-shadow:0 0 30px gold; text-align:center; font-size:18px; }
+h2 { text-align:center; color:gold; margin-bottom:20px; }
+.container { max-width:700px; margin:auto; background:#111; border-radius:15px; padding:25px; box-shadow:0 0 25px rgba(255,215,0,0.35); color:#fff; }
+label { display:block; margin-top:15px; font-weight:bold; color:silver; }
+input, select { width:100%; padding:12px; margin-top:6px; border-radius:8px; border:none; font-size:16px; }
+button { width:100%; margin-top:25px; padding:15px; background: linear-gradient(90deg,gold,silver,#00ff99,#ff00cc); border:none; border-radius:30px; font-size:18px; font-weight:bold; cursor:pointer; }
+button:hover { opacity:0.9; }
+ul.services li { list-style:none; padding:10px; margin:6px 0; border-radius:8px; background: linear-gradient(90deg,#ff512f,#dd2476,#24c6dc,#ffeb3b,#00ff6a); font-weight:bold; color:#000; }
+footer { text-align:center; padding:20px; background:#111; color:#ccc; }
+#success-section { display:none; padding:40px 20px; }
+.success-box { background:#0a3d62; padding:30px; border-radius:15px; text-align:center; box-shadow:0 0 30px rgba(0,255,0,0.45); }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#services">Services</a>
+    <a href="#buy">Buy</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<section id="home">
+  <div class="logo">Bannybrain<br>Data Hub</div>
+</section>
+
+<section id="about" style="background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);">
+  <div class="container">
+    <h2>About Us</h2>
+    <p>We provide fast, affordable, and reliable data bundles across all major networks in Ghana. Your payment is secure and delivery is instant.</p>
+  </div>
+</section>
+
+<section id="services" style="background:#222;">
+  <div class="container">
+    <h2>Our Services</h2>
+    <ul class="services">
+      <li>MTN Data Bundles</li>
+      <li>Telecel Data Bundles</li>
+      <li>AirtelTigo Data Bundles</li>
+      <li>Bulk & Retail Data</li>
+      <li>Instant Delivery</li>
+    </ul>
+  </div>
+</section>
+
+<section id="buy" style="background: linear-gradient(135deg,#2c5364,#203a43,#0f2027);">
+  <div id="main-section" class="container">
+    <h2>Buy Data Bundle</h2>
+
+    <label>Full Name</label>
+    <input type="text" id="name" placeholder="Enter your name">
+
+    <label>Select Network</label>
+    <select id="network">
+      <option value="">-- Select Network --</option>
+      <option>MTN</option>
+      <option>Telecel</option>
+      <option>AirtelTigo</option>
+    </select>
+
+    <label>Select Data Bundle</label>
+    <select id="amount">
+      <option value="">-- Choose Data Bundle --</option>
+      <option value="5">1GB – GHS 5</option>
+      <option value="9">2GB – GHS 9</option>
+      <option value="15">3GB – GHS 15</option>
+      <option value="25">5GB – GHS 25</option>
+    </select>
+
+    <button onclick="payWithPaystack()">Pay Now</button>
+    <div class="note">No email required • Secure Paystack payment</div>
+  </div>
+
+  <div id="success-section">
+    <div class="container success-box">
+      <h2>Payment Successful!</h2>
+      <p>Thank you for choosing <b>Bannybrain Data Hub</b>.</p>
+      <p>WhatsApp confirmation is opening…</p>
+    </div>
+  </div>
+</section>
+
+<section id="contact" style="background:#222;">
+  <div class="container">
+    <h2>Contact Us</h2>
+    <p>Call: 0533831200 / 0592066924</p>
+    <p>Email: herbertessel75@gmail.com</p>
+  </div>
+</section>
+
+<footer>
+  © 2026 Bannybrain Data Hub | All Rights Reserved
+</footer>
+
+<script>
+function payWithPaystack(){
+  const name = document.getElementById("name").value;
+  const network = document.getElementById("network").value;
+  const amount = document.getElementById("amount").value;
+
+  if(!name || !network || !amount){
+    alert("Please fill all fields");
+    return;
+  }
+
+  PaystackPop.setup({
+    key: "pk_live_eb959a37fda20b29c2ec0737c35007bfc78b1a6e",
+    email: "herbertessel75@gmail.com",
+    amount: amount * 100,
+    currency: "GHS",
+    callback: function(response){
+      const phone1 = "233533831200";
+      const phone2 = "233592066924";
+      const message = `Bannybrain Data Hub
+Name: ${name}
+Network: ${network}
+Data Bundle: GHS ${amount}
+Reference: ${response.reference}
+
+Payment completed. Please send my data bundle.`;
+
+      window.open(`https://wa.me/${phone1}?text=${encodeURIComponent(message)}`, "_blank");
+      setTimeout(() => { window.open(`https://wa.me/${phone2}?text=${encodeURIComponent(message)}`, "_blank"); }, 1000);
+
+      document.getElementById("main-section").style.display="none";
+      document.getElementById("success-section").style.display="block";
+    },
+    onClose: function(){ alert("Payment cancelled"); }
+  }).openIframe();
+}
+</script>
+
+</body>
+</html>
