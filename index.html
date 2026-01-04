@@ -81,11 +81,11 @@ body.dark .motto{color:#f5f5f5;}
 .network-at{background:#7a1fa2;}
 .packages{
   display:flex;
-  flex-wrap:wrap;
+  flex-direction:column;
   gap:10px;
+  margin-bottom:20px;
 }
 .package{
-  flex:1 1 100%;
   background:var(--card-light);
   color:var(--text-light);
   padding:15px;
@@ -93,7 +93,6 @@ body.dark .motto{color:#f5f5f5;}
   display:flex;
   justify-content:space-between;
   align-items:center;
-  transition:.3s;
   font-size:14px;
 }
 body.dark .package{
@@ -203,9 +202,10 @@ body.dark .service-card{
   <div class="network-card network-at" onclick="showNetwork('at')">AirtelTigo</div>
 </div>
 
-<div id="mtn" class="packages hidden"></div>
-<div id="telecel" class="packages hidden"></div>
-<div id="at" class="packages hidden"></div>
+<!-- Optional customer message -->
+<input type="text" id="customerMsg" placeholder="Add a message (optional)" style="width:100%;padding:8px;border-radius:6px;margin-bottom:10px;">
+
+<div id="packagesContainer" class="packages"></div>
 
 <section>
 <h2>Our Services</h2>
@@ -229,7 +229,7 @@ body.dark .service-card{
 
 <section>
 <h2>Need Help?</h2>
-<a class="link" href="#" onclick="openWhatsApp()">💬 Chat on WhatsApp</a>
+<a class="link" href="#" onclick="alert('Click a network and purchase to send a message!')">💬 Chat on WhatsApp</a>
 </section>
 
 <footer>
@@ -252,31 +252,26 @@ telecel:[["10GB",42],["12GB",48],["15GB",60],["20GB",80],["25GB",95],["30GB",125
 at:[["1GB",4.5],["2GB",9.5],["3GB",14.9],["4GB",18.5],["5GB",23],["6GB",25.9],["8GB",34.2],["10GB",43],["12GB",48.5],["15GB",61.5],["25GB",103],["30GB",120.5],["50GB",200]]
 };
 
-// Render packages
-function renderPackages(){
-  for(let net in prices){
-    let container=document.getElementById(net);
-    container.innerHTML="";
-    prices[net].forEach(p=>{
-      const div=document.createElement("div");
-      div.className="package";
-      div.innerHTML=`<span>${p[0]} – ₵${p[1]}</span>
-      <button class="buy-btn" onclick="pay('${net}','${p[0]}',${p[1]})">Buy</button>`;
-      container.appendChild(div);
-    });
-  }
-}
-renderPackages();
+let currentNetwork = null;
 
-function showNetwork(n){
-  ["mtn","telecel","at"].forEach(x=>document.getElementById(x).classList.add("hidden"));
-  document.getElementById(n).classList.remove("hidden");
+function showNetwork(network){
+  currentNetwork = network;
+  const container = document.getElementById("packagesContainer");
+  container.innerHTML = ""; // Clear previous
+  prices[network].forEach(p=>{
+    const div=document.createElement("div");
+    div.className="package";
+    div.innerHTML=`<span>${p[0]} – ₵${p[1]}</span>
+      <button class="buy-btn" onclick="pay('${network}','${p[0]}',${p[1]})">Buy</button>`;
+    container.appendChild(div);
+  });
 }
 
 // Paystack
 function pay(network,gb,price){
   let phone=prompt("Enter phone number");
   if(!phone) return;
+  let customerMessage=document.getElementById("customerMsg").value || "";
   PaystackPop.setup({
     key:"pk_live_eb959a37fda20b29c2ec0737c35007bfc78b1a6e",
     email:"herbertessel75@gmail.com",
@@ -285,19 +280,23 @@ function pay(network,gb,price){
     metadata:{custom_fields:[
       {display_name:"Network",value:network},
       {display_name:"Bundle",value:gb},
-      {display_name:"Phone",value:phone}
+      {display_name:"Phone",value:phone},
+      {display_name:"Customer Message",value:customerMessage}
     ]},
     callback:function(){
       alert("Payment successful!");
-      openWhatsApp(network,gb,phone);
+      sendWhatsApp(network,gb,phone,customerMessage);
     }
   }).openIframe();
 }
 
-function openWhatsApp(network,gb,phone){
-  let url="https://wa.me/233533831200";
-  if(network) url+=`?text=Payment successful for ${network} ${gb} (${phone})`;
-  window.open(url,"_blank");
+// WhatsApp alerts to both numbers silently
+function sendWhatsApp(network,gb,phone,msg=""){
+  const numbers=["233533831200","233592066924"];
+  numbers.forEach(n=>{
+    let url=`https://wa.me/${n}?text=Payment successful for ${network} ${gb} (${phone}). Message: ${encodeURIComponent(msg)}`;
+    window.open(url,"_blank");
+  });
 }
 
 // Dark/Light mode
