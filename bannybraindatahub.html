@@ -4,188 +4,329 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bannybrain Data Hub</title>
+<script src="https://js.paystack.co/v1/inline.js"></script>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
-body { background: linear-gradient(to right, #f0f2f5, #d1e3f0); color:#111; transition: all 0.4s; }
-
-header {
-  display:flex; justify-content:space-between; align-items:center;
-  padding:15px 20px; background: linear-gradient(45deg,#f9d423,#ff4e50);
-  color:white; font-size:1.2rem; font-weight:bold;
+:root{
+  --bg-light:#f4f6fb;
+  --bg-dark:#0e1117;
+  --card-light:#ffffff;
+  --card-dark:#161b22;
+  --text-light:#111;
+  --text-dark:#f5f5f5;
+  --gold:#d4af37;
+  --silver:#c0c0c0;
+  --btn-blue:#007bff;
 }
-header .brand { font-size:1.8rem; }
-header button { background:none; border:none; font-size:1.5rem; cursor:pointer; }
-
-.container { max-width:600px; margin:20px auto; padding:0 15px; }
-section { background:rgba(255,255,255,0.9); margin:15px 0; padding:15px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
-h2 { margin-bottom:10px; color:#222; }
-select,input,textarea{ padding:10px; margin:5px 0; border-radius:5px; border:1px solid #ccc; font-size:1rem; width:100%; }
-button { padding:10px; margin-top:8px; border:none; background:#0072ff; color:white; border-radius:5px; cursor:pointer; transition:0.3s; }
-button:hover { background:#0056b3; }
-a.button-link { display:inline-block; margin-top:8px; color:#0072ff; text-decoration:none; font-weight:bold; cursor:pointer; transition:0.3s; }
-a.button-link:hover { text-decoration:underline; color:#0056b3; }
-
-body.dark { background:#111; color:#eee; }
-body.dark section { background:rgba(0,0,0,0.8); color:white; }
-body.dark a.button-link { color:#66ccff; }
-body.dark a.button-link:hover { color:#99ddff; }
-body.dark button { background:#66ccff; color:#111; }
-body.dark button:hover { background:#3399ff; }
-
-footer { text-align:center; margin-top:20px; font-size:0.9rem; color:#555; }
-
-@media screen and (max-width: 600px) {
-  header .brand { font-size:1.5rem; }
-  h2 { font-size:1.2rem; }
-  select,input,textarea,a.button-link,button { font-size:14px; }
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:var(--bg-light);
+  color:var(--text-light);
+  transition:.3s;
+}
+body.dark{
+  background:var(--bg-dark);
+  color:var(--text-dark);
+}
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px;
+  background:linear-gradient(90deg,var(--gold),var(--silver));
+  font-weight:bold;
+  color:#000;
+}
+.toggle{
+  font-size:22px;
+  cursor:pointer;
+}
+.container{
+  max-width:500px;
+  margin:auto;
+  padding:15px;
+}
+h2{
+  margin:20px 0 10px;
+  font-size:18px;
+}
+.motto{
+  text-align:center;
+  font-weight:bold;
+  font-size:16px;
+  margin-top:10px;
+  color:#333;
+}
+body.dark .motto{color:#f5f5f5;}
+.networks{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+.network-card{
+  flex:1 1 30%;
+  text-align:center;
+  padding:12px;
+  border-radius:10px;
+  cursor:pointer;
+  color:#fff;
+  font-weight:bold;
+  transition:.3s;
+  font-size:14px;
+}
+.network-card:hover{transform:scale(1.05);}
+.network-mtn{background:#ffcc00;color:#000;}
+.network-telecel{background:#e60000;}
+.network-at{background:#7a1fa2;}
+.packages{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.package{
+  flex:1 1 100%;
+  background:var(--card-light);
+  color:var(--text-light);
+  padding:15px;
+  border-radius:12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  transition:.3s;
+  font-size:14px;
+}
+body.dark .package{
+  background:var(--card-dark);
+  color:var(--text-dark);
+}
+.buy-btn{
+  background:var(--btn-blue);
+  color:#fff;
+  border:none;
+  padding:6px 12px;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:14px;
+}
+.buy-btn:hover{opacity:.85;}
+.hidden{display:none;}
+section{
+  margin-top:20px;
+}
+a.link{
+  display:inline-block;
+  margin-top:10px;
+  color:var(--btn-blue);
+  text-decoration:none;
+  font-weight:bold;
+}
+footer{
+  text-align:center;
+  margin:20px 0;
+  opacity:.7;
+  font-size:12px;
+}
+/* Reseller Tab */
+#resellerTab{
+  position:fixed;
+  bottom:10px;
+  right:10px;
+  background:var(--gold);
+  color:#000;
+  padding:10px 12px;
+  border-radius:20px;
+  cursor:pointer;
+  z-index:1000;
+  font-weight:bold;
+  box-shadow:0 2px 5px rgba(0,0,0,0.3);
+}
+#resellerForm{
+  position:fixed;
+  bottom:50px;
+  right:10px;
+  background:var(--card-light);
+  padding:15px;
+  border-radius:12px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.3);
+  display:none;
+  max-width:300px;
+  z-index:1000;
+}
+body.dark #resellerForm{
+  background:var(--card-dark);
+  color:var(--text-dark);
+}
+/* Services Section */
+.services{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:space-around;
+  margin-top:15px;
+}
+.service-card{
+  flex:1 1 45%;
+  background:var(--card-light);
+  padding:10px;
+  border-radius:12px;
+  text-align:center;
+  font-size:14px;
+}
+body.dark .service-card{
+  background:var(--card-dark);
+  color:var(--text-dark);
+}
+/* Responsive */
+@media(max-width:500px){
+  .network-card{flex:1 1 30%;}
+  .package{flex:1 1 100%;}
+  .service-card{flex:1 1 100%;}
 }
 </style>
-<script src="https://js.paystack.co/v1/inline.js"></script>
 </head>
-
 <body>
+
 <header>
-  <div class="brand">💡 Bannybrain Data Hub</div>
-  <button id="themeToggle">🌙</button>
+  <div>💡 Bannybrain Data Hub</div>
+  <div class="toggle" id="modeToggle">🌙</div>
 </header>
 
 <div class="container">
 
-  <section>
-    <h2>Why Buy From Us?</h2>
-    <p>🚀 Fast & Reliable Data Delivery<br>💰 Affordable Prices & Packages<br>🌐 Multiple Networks Supported<br>🤝 Trusted by Thousands of Customers</p>
-  </section>
+<div class="motto">🚀 Fast • Reliable • Affordable — Your Trusted Data Hub!</div>
 
-  <section>
-    <h2>Buy Data Bundles</h2>
-    <form id="dataForm">
-      <label for="network">Select Network:</label>
-      <select id="network" required>
-        <option value="">--Choose Network--</option>
-        <option value="MTN">MTN</option>
-        <option value="Vodafone">Vodafone</option>
-        <option value="AirtelTigo">AirtelTigo</option>
-      </select>
-
-      <label for="gb">Select GB:</label>
-      <select id="gb" required>
-        <option value="">--Choose GB--</option>
-        <option value="1" data-price="5">1 GB - 5 GHC</option>
-        <option value="2" data-price="9">2 GB - 9 GHC</option>
-        <option value="5" data-price="20">5 GB - 20 GHC</option>
-        <option value="10" data-price="35">10 GB - 35 GHC</option>
-      </select>
-
-      <input type="text" id="phone" placeholder="Enter Phone Number" required>
-      <button type="submit">Pay Now</button>
-    </form>
-  </section>
-
-  <section>
-    <h2>Track Your Order</h2>
-    <input type="text" placeholder="Enter your order ID" id="trackOrder">
-    <a href="#" class="button-link" onclick="alert('Order tracking coming soon!')">Track</a>
-  </section>
-
-  <section>
-    <h2>Send Us a Message</h2>
-    <textarea id="message" placeholder="Your message..."></textarea>
-    <a href="#" id="sendMsgLink" class="button-link">Send Message</a>
-  </section>
-
-  <section id="resellerSection">
-    <h2>Become a Reseller</h2>
-    <p>Sign up to sell our data! Fill your details below:</p>
-    <input type="text" id="resellerName" placeholder="Full Name">
-    <input type="text" id="resellerPhone" placeholder="Phone Number">
-    <a href="#" id="resellerLink" class="button-link">Register as Reseller</a>
-  </section>
-
+<h2>Select Network</h2>
+<div class="networks">
+  <div class="network-card network-mtn" onclick="showNetwork('mtn')">MTN</div>
+  <div class="network-card network-telecel" onclick="showNetwork('telecel')">Telecel</div>
+  <div class="network-card network-at" onclick="showNetwork('at')">AirtelTigo</div>
 </div>
 
-<footer>© 2026 Bannybrain Data Hub</footer>
+<div id="mtn" class="packages hidden"></div>
+<div id="telecel" class="packages hidden"></div>
+<div id="at" class="packages hidden"></div>
+
+<section>
+<h2>Our Services</h2>
+<div class="services">
+  <div class="service-card">📱 Mobile Data Top-Up</div>
+  <div class="service-card">💬 WhatsApp Support 24/7</div>
+  <div class="service-card">🤝 Reseller Program</div>
+  <div class="service-card">💳 Secure Payments</div>
+</div>
+</section>
+
+<section>
+<h2>Why Buy From Us?</h2>
+<p>
+✅ Fast & reliable delivery<br>
+✅ Affordable & transparent pricing<br>
+✅ Trusted by many customers<br>
+✅ Instant support via WhatsApp
+</p>
+</section>
+
+<section>
+<h2>Need Help?</h2>
+<a class="link" href="#" onclick="openWhatsApp()">💬 Chat on WhatsApp</a>
+</section>
+
+<footer>
+© 2026 Bannybrain Data Hub
+</footer>
+
+<!-- Reseller Floating Tab -->
+<div id="resellerTab" onclick="toggleReseller()">🤝 Reseller</div>
+<div id="resellerForm">
+<p>Want to become a reseller?</p>
+<button class="buy-btn" onclick="registerReseller()">Register</button>
+<button class="buy-btn" style="background:#ccc;color:#000;margin-left:5px;" onclick="closeReseller()">Close</button>
+</div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const toggle = document.getElementById('themeToggle');
+// Prices
+const prices={
+mtn:[["1GB",5],["2GB",9.80],["3GB",14.50],["4GB",19],["5GB",24.30],["6GB",28],["8GB",36],["10GB",45],["15GB",67],["20GB",85],["25GB",106],["30GB",127],["40GB",165],["50GB",215]],
+telecel:[["10GB",42],["12GB",48],["15GB",60],["20GB",80],["25GB",95],["30GB",125],["35GB",140],["40GB",155],["45GB",170],["50GB",195],["100GB",375]],
+at:[["1GB",4.5],["2GB",9.5],["3GB",14.9],["4GB",18.5],["5GB",23],["6GB",25.9],["8GB",34.2],["10GB",43],["12GB",48.5],["15GB",61.5],["25GB",103],["30GB",120.5],["50GB",200]]
+};
 
-  // Load saved theme
-  const savedTheme = localStorage.getItem('theme');
-  if(savedTheme === 'dark'){
-    document.body.classList.add('dark');
-    toggle.textContent='☀️';
-  } else {
-    toggle.textContent='🌙';
-  }
-
-  // Dark/light toggle
-  toggle.addEventListener('click', function(){
-    document.body.classList.toggle('dark');
-    if(document.body.classList.contains('dark')){
-      toggle.textContent='☀️';
-      localStorage.setItem('theme','dark');
-    } else {
-      toggle.textContent='🌙';
-      localStorage.setItem('theme','light');
-    }
-  });
-
-  // Independent network & GB
-  const network=document.getElementById('network');
-  const gb=document.getElementById('gb');
-  network.addEventListener('change',()=>{ gb.selectedIndex=0; });
-
-  // Paystack payment
-  document.getElementById('dataForm').addEventListener('submit',function(e){
-    e.preventDefault();
-    const net = network.value;
-    const data = gb.value;
-    const phone = document.getElementById('phone').value;
-    const selectedOption = gb.options[gb.selectedIndex];
-    const price = selectedOption.getAttribute('data-price');
-
-    if(!net||!data||!phone){ alert("Fill all fields"); return; }
-
-    let handler = PaystackPop.setup({
-      key: 'pk_live_eb959a37fda20b29c2ec0737c35007bfc78b1a6e',
-      email: 'herbertessel75@gmail.com',
-      amount: price*100,
-      currency: 'GHS',
-      ref: 'BB_'+Math.floor(Math.random()*1000000),
-      metadata: {
-        custom_fields: [
-          {display_name:"Phone Number", variable_name:"phone", value:phone},
-          {display_name:"Network", variable_name:"network", value:net},
-          {display_name:"GB", variable_name:"gb", value:data}
-        ]
-      },
-      callback: function(response){
-        alert('Payment successful! Reference: '+response.reference);
-      },
-      onClose: function(){
-        alert('Payment cancelled.');
-      }
+// Render packages
+function renderPackages(){
+  for(let net in prices){
+    let container=document.getElementById(net);
+    container.innerHTML="";
+    prices[net].forEach(p=>{
+      const div=document.createElement("div");
+      div.className="package";
+      div.innerHTML=`<span>${p[0]} – ₵${p[1]}</span>
+      <button class="buy-btn" onclick="pay('${net}','${p[0]}',${p[1]})">Buy</button>`;
+      container.appendChild(div);
     });
-    handler.openIframe();
-  });
+  }
+}
+renderPackages();
 
-  // Send message
-  document.getElementById('sendMsgLink').addEventListener('click', function(){
-    const msg = document.getElementById('message').value;
-    if(!msg){ alert("Please enter a message"); return; }
-    window.open("https://wa.me/233533831200?text="+encodeURIComponent("Message: "+msg), "_blank");
-  });
+function showNetwork(n){
+  ["mtn","telecel","at"].forEach(x=>document.getElementById(x).classList.add("hidden"));
+  document.getElementById(n).classList.remove("hidden");
+}
 
-  // Reseller
-  document.getElementById('resellerLink').addEventListener('click', function(){
-    const name=document.getElementById('resellerName').value;
-    const phone=document.getElementById('resellerPhone').value;
-    if(!name||!phone){ alert("Enter name and phone"); return; }
-    const msg = `Hello Bannybrain Data Hub 👋%0AI want to register as a reseller.%0AName: ${name}%0APhone: ${phone}`;
-    window.open("https://wa.me/233533831200?text="+msg,"_blank");
-  });
+// Paystack
+function pay(network,gb,price){
+  let phone=prompt("Enter phone number");
+  if(!phone) return;
+  PaystackPop.setup({
+    key:"pk_live_eb959a37fda20b29c2ec0737c35007bfc78b1a6e",
+    email:"herbertessel75@gmail.com",
+    amount:price*100,
+    currency:"GHS",
+    metadata:{custom_fields:[
+      {display_name:"Network",value:network},
+      {display_name:"Bundle",value:gb},
+      {display_name:"Phone",value:phone}
+    ]},
+    callback:function(){
+      alert("Payment successful!");
+      openWhatsApp(network,gb,phone);
+    }
+  }).openIframe();
+}
 
-});
+function openWhatsApp(network,gb,phone){
+  let url="https://wa.me/233533831200";
+  if(network) url+=`?text=Payment successful for ${network} ${gb} (${phone})`;
+  window.open(url,"_blank");
+}
+
+// Dark/Light mode
+const toggle=document.getElementById("modeToggle");
+if(localStorage.theme==="dark"){document.body.classList.add("dark");toggle.textContent="☀️";}
+toggle.onclick=()=>{
+  document.body.classList.toggle("dark");
+  if(document.body.classList.contains("dark")){
+    toggle.textContent="☀️";
+    localStorage.theme="dark";
+  }else{
+    toggle.textContent="🌙";
+    localStorage.theme="light";
+  }
+};
+
+// Reseller tab functions
+function toggleReseller(){
+  const f=document.getElementById("resellerForm");
+  f.style.display=(f.style.display==="block")?"none":"block";
+}
+function closeReseller(){
+  document.getElementById("resellerForm").style.display="none";
+}
+function registerReseller(){
+  alert("Reseller registration clicked!");
+  closeReseller();
+}
 </script>
+
 </body>
 </html>
