@@ -81,11 +81,11 @@ body.dark .motto{color:#f5f5f5;}
 .network-at{background:#7a1fa2;}
 .packages{
   display:flex;
-  flex-wrap:wrap;
+  flex-direction:column;
   gap:10px;
+  margin-bottom:20px;
 }
 .package{
-  flex:1 1 100%;
   background:var(--card-light);
   color:var(--text-light);
   padding:15px;
@@ -93,7 +93,6 @@ body.dark .motto{color:#f5f5f5;}
   display:flex;
   justify-content:space-between;
   align-items:center;
-  transition:.3s;
   font-size:14px;
 }
 body.dark .package{
@@ -177,6 +176,21 @@ body.dark .service-card{
   background:var(--card-dark);
   color:var(--text-dark);
 }
+/* Success Message */
+#successMsg{
+  display:none;
+  padding:20px;
+  background:var(--gold);
+  border-radius:12px;
+  text-align:center;
+  font-weight:bold;
+  font-size:16px;
+  margin-top:20px;
+}
+body.dark #successMsg{
+  background:#ffaa00;
+  color:#000;
+}
 /* Responsive */
 @media(max-width:500px){
   .network-card{flex:1 1 30%;}
@@ -203,9 +217,11 @@ body.dark .service-card{
   <div class="network-card network-at" onclick="showNetwork('at')">AirtelTigo</div>
 </div>
 
-<div id="mtn" class="packages hidden"></div>
-<div id="telecel" class="packages hidden"></div>
-<div id="at" class="packages hidden"></div>
+<input type="text" id="customerMsg" placeholder="Add a message (optional)" style="width:100%;padding:8px;border-radius:6px;margin-bottom:10px;">
+
+<div id="packagesContainer" class="packages"></div>
+
+<div id="successMsg"></div>
 
 <section>
 <h2>Our Services</h2>
@@ -227,104 +243,98 @@ body.dark .service-card{
 </p>
 </section>
 
-<section>
-<h2>Need Help?</h2>
-<a class="link" href="#" onclick="openWhatsApp()">💬 Chat on WhatsApp</a>
-</section>
-
 <footer>
 © 2026 Bannybrain Data Hub
 </footer>
 
 <!-- Reseller Floating Tab -->
 <div id="resellerTab" onclick="toggleReseller()">🤝 Reseller</div>
+
 <div id="resellerForm">
-<p>Want to become a reseller?</p>
-<button class="buy-btn" onclick="registerReseller()">Register</button>
-<button class="buy-btn" style="background:#ccc;color:#000;margin-left:5px;" onclick="closeReseller()">Close</button>
+  <h3>Become a Reseller</h3>
+  <input type="text" id="resellerName" placeholder="Your Name" style="width:100%;margin-bottom:5px;padding:6px;">
+  <input type="text" id="resellerPhone" placeholder="Phone Number" style="width:100%;margin-bottom:5px;padding:6px;">
+  <input type="text" id="resellerEmail" placeholder="Email (optional)" style="width:100%;margin-bottom:5px;padding:6px;">
+  <button class="buy-btn" onclick="submitReseller()">Submit</button>
+  <button class="buy-btn" style="background:#ccc;color:#000;margin-left:5px;" onclick="closeReseller()">Close</button>
 </div>
 
 <script>
-// Prices
-const prices={
-mtn:[["1GB",5],["2GB",9.80],["3GB",14.50],["4GB",19],["5GB",24.30],["6GB",28],["8GB",36],["10GB",45],["15GB",67],["20GB",85],["25GB",106],["30GB",127],["40GB",165],["50GB",215]],
-telecel:[["10GB",42],["12GB",48],["15GB",60],["20GB",80],["25GB",95],["30GB",125],["35GB",140],["40GB",155],["45GB",170],["50GB",195],["100GB",375]],
-at:[["1GB",4.5],["2GB",9.5],["3GB",14.9],["4GB",18.5],["5GB",23],["6GB",25.9],["8GB",34.2],["10GB",43],["12GB",48.5],["15GB",61.5],["25GB",103],["30GB",120.5],["50GB",200]]
+// Dark/Light mode toggle
+const toggle = document.getElementById("modeToggle");
+toggle.addEventListener("click",()=>{
+  document.body.classList.toggle("dark");
+  toggle.textContent = document.body.classList.contains("dark")?"☀️":"🌙";
+});
+
+// Packages data
+const dataPackages={
+  mtn: { "1GB":5,"2GB":9.8,"3GB":14.5,"4GB":19,"5GB":24.3,"6GB":28,"8GB":36,"10GB":45,"15GB":67,"20GB":85,"25GB":106,"30GB":127,"40GB":165,"50GB":215 },
+  telecel: {"10GB":42,"12GB":48,"15GB":60,"20GB":80,"25GB":95,"30GB":125,"35GB":140,"40GB":155,"45GB":170,"50GB":195,"100GB":375},
+  at: {"1GB":4.5,"2GB":9.5,"3GB":14.9,"4GB":18.5,"5GB":23,"6GB":25.9,"8GB":34.2,"10GB":43,"12GB":48.5,"15GB":61.5,"25GB":103,"30GB":120.5,"50GB":200}
 };
 
-// Render packages
-function renderPackages(){
-  for(let net in prices){
-    let container=document.getElementById(net);
-    container.innerHTML="";
-    prices[net].forEach(p=>{
-      const div=document.createElement("div");
-      div.className="package";
-      div.innerHTML=`<span>${p[0]} – ₵${p[1]}</span>
-      <button class="buy-btn" onclick="pay('${net}','${p[0]}',${p[1]})">Buy</button>`;
-      container.appendChild(div);
-    });
+function showNetwork(network){
+  const container=document.getElementById("packagesContainer");
+  container.innerHTML="";
+  for(let gb in dataPackages[network]){
+    const price=dataPackages[network][gb];
+    const div=document.createElement("div");
+    div.className="package";
+    div.innerHTML=`<span>${gb} - GHS ${price}</span> <button class="buy-btn" onclick="pay('${network}','${gb}',${price})">Buy</button>`;
+    container.appendChild(div);
   }
 }
-renderPackages();
 
-function showNetwork(n){
-  ["mtn","telecel","at"].forEach(x=>document.getElementById(x).classList.add("hidden"));
-  document.getElementById(n).classList.remove("hidden");
-}
-
-// Paystack
+// Payment function
 function pay(network,gb,price){
   let phone=prompt("Enter phone number");
   if(!phone) return;
+  let customerMessage=document.getElementById("customerMsg").value||"";
   PaystackPop.setup({
     key:"pk_live_eb959a37fda20b29c2ec0737c35007bfc78b1a6e",
     email:"herbertessel75@gmail.com",
     amount:price*100,
     currency:"GHS",
-    metadata:{custom_fields:[
-      {display_name:"Network",value:network},
-      {display_name:"Bundle",value:gb},
-      {display_name:"Phone",value:phone}
-    ]},
+    metadata:{custom_fields:[{display_name:"Network",value:network},{display_name:"Bundle",value:gb},{display_name:"Phone",value:phone},{display_name:"Customer Message",value:customerMessage}]},
     callback:function(){
-      alert("Payment successful!");
-      openWhatsApp(network,gb,phone);
+      document.getElementById("packagesContainer").style.display="none";
+      const msg=document.getElementById("successMsg");
+      msg.style.display="block";
+      msg.style.background="#d4af37";
+      msg.innerHTML=`🎉 Payment Successful!<br>Thank you for your purchase. Your data will be delivered shortly. ✅`;
+
+      // WhatsApp alerts to both numbers
+      const numbers=["233533831200","233592066924"];
+      const waText=`New purchase: ${network} ${gb} - Phone: ${phone} - Message: ${customerMessage}`;
+      numbers.forEach(num=>{
+        window.open(`https://wa.me/${num}?text=${encodeURIComponent(waText)}`,"_blank");
+      });
+    },
+    onClose:function(){
+      const msg=document.getElementById("successMsg");
+      msg.style.display="block";
+      msg.style.background="#ff4d4d";
+      msg.innerHTML="❌ Payment not completed or cancelled. Please try again.";
     }
   }).openIframe();
 }
 
-function openWhatsApp(network,gb,phone){
-  let url="https://wa.me/233533831200";
-  if(network) url+=`?text=Payment successful for ${network} ${gb} (${phone})`;
-  window.open(url,"_blank");
-}
-
-// Dark/Light mode
-const toggle=document.getElementById("modeToggle");
-if(localStorage.theme==="dark"){document.body.classList.add("dark");toggle.textContent="☀️";}
-toggle.onclick=()=>{
-  document.body.classList.toggle("dark");
-  if(document.body.classList.contains("dark")){
-    toggle.textContent="☀️";
-    localStorage.theme="dark";
-  }else{
-    toggle.textContent="🌙";
-    localStorage.theme="light";
-  }
-};
-
-// Reseller tab functions
+// Reseller form functions
 function toggleReseller(){
-  const f=document.getElementById("resellerForm");
-  f.style.display=(f.style.display==="block")?"none":"block";
+  const form=document.getElementById("resellerForm");
+  form.style.display=form.style.display==="block"?"none":"block";
 }
-function closeReseller(){
-  document.getElementById("resellerForm").style.display="none";
-}
-function registerReseller(){
-  alert("Reseller registration clicked!");
-  closeReseller();
+function closeReseller(){document.getElementById("resellerForm").style.display="none";}
+function submitReseller(){
+  const name=document.getElementById("resellerName").value.trim();
+  const phone=document.getElementById("resellerPhone").value.trim();
+  const email=document.getElementById("resellerEmail").value.trim();
+  if(!name || !phone){alert("Please enter your name and phone number.");return;}
+  document.getElementById("resellerForm").innerHTML=`<p>🎉 Thank you ${name}! We will contact you shortly to become a reseller.</p>`;
+  const waNumber="233533831200";
+  const msg=`New reseller registration: ${name}, Phone: ${phone}, Email: ${email}`;
+  window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`,"_blank");
 }
 </script>
 
